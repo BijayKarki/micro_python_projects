@@ -23,3 +23,6 @@ My desire to know the room temperature inspired me to take on this project. For 
 Normal ssd1306 library does not support 1.3 inch OLED display. Hence, sh1106 library was used instead. The following documentation was used as a reference.
 
     https://github.com/robert-hh/SH1106/blob/master/readme.md
+
+
+#

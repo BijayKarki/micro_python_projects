@@ -16,7 +16,7 @@ oled = sh1106.SH1106_I2C(oled_width, oled_height, i2c, rotate=180)
 oled.invert(False)
 oled.contrast = int(255 * .01)  # 20% contrast 
 
-greet = "Hello Bijay"
+greet = "Hello World"
 terminate = "Bye bye"
 
 def clear_line(y, length):

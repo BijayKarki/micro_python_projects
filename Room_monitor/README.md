@@ -24,6 +24,6 @@ Normal ssd1306 library does not support 1.3 inch OLED display. Hence, sh1106 lib
 
     https://github.com/robert-hh/SH1106/blob/master/readme.md
 
+## Functional Setup
 
-#
 ![IMG_5573](https://github.com/user-attachments/assets/03bca2ae-bb8f-4d51-a7ea-0c895c9da09b)

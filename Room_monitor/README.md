@@ -10,13 +10,13 @@ My desire to know the room temperature inspired me to take on this project. For 
 2. DHT11 (temperature and humidity) sensor
 3. 1.3 inch OLED display
 
-## Future updates
+## Future updated
 
-1. Real time tracking (but requires different micro controller or a hardware setup)
-2. Time based features (turning display off during night)
-3. 12 hour display (a line/bar chart )
-4. Various LED indicators for running the setup independently.
-5. Enhancing battery efficiency.
+1. Various LED indicators for running the setup independently.<br>
+   Added functionality to turn on the onboard Neopixel LED to indicate the pico is up running, starting and ending the process.
+
+2. Text animation in OLED.<br>
+   Added functionalities to animate the text displayed on the OLED over static texts to make it eye catching.
 
 ## Aditional info
 

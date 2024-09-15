@@ -1,3 +1,5 @@
+# Costumized for RP2040-Zero
+
 from machine import Pin
 from dht import DHT11
 
@@ -21,3 +23,14 @@ def get_data (pin_no):
 
     except Exception as e:
         return(f"Failed to read from sensor: {e}", False)
+
+
+if __name__ == "__main__":
+    print("\nTesting DHT11_sensor.py module\nd")
+    from time import sleep
+    try:
+        while True:
+            print(get_data(7))
+            sleep(.5)
+    except KeyboardInterrupt:
+        print("\nProgram terminated by the user")

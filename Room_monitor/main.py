@@ -1,8 +1,32 @@
 from machine import Pin, I2C
-from DHT11_sensor import get_data
 from time import sleep
 import sh1106
 
+from DHT11_sensor import get_data
+from startup_text import animate_text
+from RGB_led import set_color
+
+#### color codes
+V = (148, 0, 211)     # violet
+I = (75, 0, 130)      # Indigo
+B = (0, 0, 255)       # Blue
+G = (0, 255, 0)       # Green
+Y = (255, 255, 0)     # Yellow
+O = (255, 127, 0)     # Orange
+R = (255, 0, 0)       # Red
+W = (255, 255, 255)   # White
+led_off = (0, 0, 0)
+led_color = [V, I, B, G, Y, O, R, W]
+
+# blinking Red LED to indicate pico is up running the main.py
+for i in range(5):
+    set_color(*R)
+    sleep(.2)
+    set_color(*led_off)
+    sleep(.2)
+
+
+# DHT sensor is connected to Pin 7
 DHT_sensor = 7
 
 # Initialize I2C
@@ -14,14 +38,36 @@ oled_height = 64
 oled = sh1106.SH1106_I2C(oled_width, oled_height, i2c, rotate=180)
 
 oled.invert(False)
-oled.contrast = int(255 * .01)  # 20% contrast 
+oled.contrast = int(10)  # 0 - 255 contrast 
 
-greet = "Hello World"
+greet = "Hello Bijay!"
 terminate = "Bye bye"
+
+
+
+
+# Start up message
+animate_text()
+
+# LED blinking + mock animation
+oled.fill(0)
+text1 = "Measurement"
+text2 = "Starting" 
+oled.text(text1, 0, 0)
+oled.text(text2, 0, 15)
+oled.show()
+
+for i in range(len(led_color)):
+    oled.text(".", (65 + (i*7)), 15)
+    set_color(*led_color[i])
+    oled.show()
+    sleep(.45)
+    set_color(*led_off)
+
 
 def clear_line(y, length):
     """Clear a line of text at a specific y-coordinate"""
-    oled.fill_rect(0, y, length, 8, 0)  # Adjust height (8) based on font size
+    oled.fill_rect(0, y, length, 2, 0)  # Adjust height (8) based on font size
 
 try:
     while True:
@@ -43,7 +89,9 @@ try:
             oled.text(f'Humidity :{data["humidity"]} %', 0, 40)
 
             oled.show()
-            sleep(5)
+            sleep(2)
+            #oled.poweroff()
+            sleep(3)
 
         else:
             oled.fill(0)
@@ -52,10 +100,16 @@ try:
             oled.show()
 
 except KeyboardInterrupt:
-    oled.poweron()
+    
     oled.fill(0)
     oled.text(terminate, 0, 0)
     oled.text("See you again!", 0, 20)
     oled.show()
-    sleep(3)
+    
+    for i in range(3):
+        set_color(*W)
+        sleep(0.2)
+        set_color(*led_off)
+        sleep(0.2)
+
     oled.poweroff()

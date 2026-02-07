@@ -6,7 +6,7 @@ import config
 from connect_wifi import connect_wifi, is_connected
 from set_time import sync_time
 from aht21_sensor import AHT21B
-from mqtt_client import MQTTManager
+from mqtt_connection import connect_mqtt, mqtt_status
 
 from oled_init import init_oled
 from Intro_text import (scene_first, scene_second, scene_interrupt, display_weather_n_time)
@@ -37,27 +37,14 @@ def initialize_system():
     
     # MQTT
     mqtt = None
-    try:
-        mqtt = MQTTManager(
-            config.MQTT_CLIENT_ID,
-            config.MQTT_BROKER,
-            config.MQTT_PORT,
-            config.MQTT_STATE_TOPIC,
-            config.MQTT_AVAIL_TOPIC,
-            username=config.MQTT_USERNAME,
-            password=config.MQTT_PASSWORD 
-        )
-        mqtt.connect()
-    except Exception as e:
-        print("[ERROR] MQTT init failed:", e)
-        mqtt = None
+    mqtt = connect_mqtt()
         
     # Watch dog moved here to avoid any conflict with mqtt initialization 
     wdt = WDT(timeout=60000)
 
     return wdt, oled, OLED_W, OLED_H, sensor, mqtt
-
-
+    
+    
 # Main loop
 def main_loop():
     wdt, oled, OLED_W, OLED_H, sensor, mqtt = initialize_system()
@@ -79,7 +66,8 @@ def main_loop():
     last_sensor_update = 0
     last_weather_update = 0
     last_mqtt_publish = 0
-    last_mqtt_attempt = 0 
+    last_mqtt_attempt = 0
+    last_mqtt_ping = 0
 
     # Screen state
     screen_was_on = True
@@ -105,23 +93,15 @@ def main_loop():
                 except Exception as e:
                     print("[ERROR] AHT21 read failed:", e)
             
-            # MQTT reconnect (transport layer)
-            if mqtt is None and now - last_mqtt_attempt >= 30 and is_connected():
-                try:
-                    mqtt = MQTTManager(
-                        config.MQTT_CLIENT_ID,
-                        config.MQTT_BROKER,
-                        config.MQTT_PORT,
-                        config.MQTT_STATE_TOPIC,
-                        config.MQTT_AVAIL_TOPIC,
-                        username=config.MQTT_USERNAME,
-                        password=config.MQTT_PASSWORD
-                    )
-                    mqtt.connect()
-                    print("[MQTT] Reconnected")
-                except Exception as e:
-                    print("[WARN] MQTT reconnect failed:", e)
-                    mqtt = None
+            # check MQTT every 15 secs
+            if mqtt and now - last_mqtt_ping >= 15:
+                mqtt = mqtt_status(mqtt)
+                last_mqtt_ping = now
+                
+                
+            # connect MQTT if connection dropped    
+            if mqtt is None and is_connected() and now - last_mqtt_attempt >= 30:
+                mqtt = mqtt_connect()
                 last_mqtt_attempt = now
             
             
@@ -143,6 +123,7 @@ def main_loop():
                     last_mqtt_publish = now
                 except Exception as e:
                     print("[ERROR] MQTT publish failed:", e)
+                    
 
             # Weather API update
             if last_weather_update == 0:
@@ -151,7 +132,7 @@ def main_loop():
                     if is_connected():
                         out_temp, out_humidity, wind_speed = fetch_weather_data()
                         weather_updated = True
-                        print(f"[{now}] Initial weather fetched")
+                        #print(f"[{now}] Initial weather fetched")
                 except Exception as e:
                     print("[ERROR] Initial weather fetch failed:", e)
                 last_weather_update = now
@@ -203,6 +184,7 @@ def main_loop():
 
             screen_was_on = screen_is_on
 
+
             # Housekeeping
             if now % 900 < 2:
                 gc.collect()
@@ -214,6 +196,7 @@ def main_loop():
         except KeyboardInterrupt:
             scene_interrupt(oled)
             break
+
 
 # Entry point
 if __name__ == "__main__":

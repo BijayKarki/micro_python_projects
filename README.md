@@ -39,6 +39,7 @@ The data gathered is pushed to ThingSpeak for visualization and further acccess.
 | 1   | The switch does not respond sometimes     | Basic setup: just an internal pull up resistor  | Interrupt handler switch implemented                  |
 | 2   | Outdoor data is not updated instantly     | Algorithm needs some minor revisions            | Algorithm changed to update the new data accordingly  |
 | 3   | Conflict between I2C bus (OLED and AHT21) | Earlier programming logic for only 1 I2C device | Edited the code and logic for both I2C initialization |
+| 4   | MQTT does not reconnect once dropped      | `mqtt` value was true even after disconnected| Added a module to handle reconnection when nedded     |
 
 ## Future work
 

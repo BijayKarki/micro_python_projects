@@ -101,7 +101,7 @@ def main_loop():
                 
             # connect MQTT if connection dropped    
             if mqtt is None and is_connected() and now - last_mqtt_attempt >= 30:
-                mqtt = mqtt_connect()
+                mqtt = connect_mqtt()
                 last_mqtt_attempt = now
             
             

@@ -71,14 +71,14 @@ def draw_table(oled, oled_width):
     oled.hline(0, h_line*4, oled_width, 1)
 
     v1, v2, v3 = 0, 35, 73
-    oled.vline(v1, h_line, h_line*3, 1)
+    oled.vline(v1, 0,h_line*4, 1)
     oled.vline(v2, 0, h_line*4, 1)
     oled.vline(v3, 0, h_line*4, 1)
 
 def display_weather(oled, oled_width, room_temp, room_humidity, out_temp, out_humidity, wind_speed, weekday):
     """Display weather data in table"""
     oled.fill(0)
-    oled.text(weekday, 0, 3)
+    oled.text(weekday, 2, 3)
     oled.text("Room", 37, 3)
     oled.text("Outdoor", 75, 3)
 
